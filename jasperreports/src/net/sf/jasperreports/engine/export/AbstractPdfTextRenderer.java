@@ -159,12 +159,15 @@ public abstract class AbstractPdfTextRenderer extends AbstractTextRenderer
 	 {
 		if (addActualText())
 		{
-			tagHelper.startText(paragraphText, text.getLinkType() != null);
+			//  Provide the text so that we get the properties (tags) in case there is a tag
+			// that should appear in a text element
+			tagHelper.startText(text, paragraphText, text.getLinkType() != null);
 		}
 		else
 		{
-			tagHelper.startText(text.getLinkType() != null);
-		}
+			//  Provide the text so that we get the properties (tags) in case there is a tag
+			// that should appear in a text element
+			tagHelper.startText(text, text.getLinkType() != null);		}
 		
 		super.renderParagraph(allParagraphs, paragraphStart, paragraphText);
 		

@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.export.pdf;
 
+import com.lowagie.text.pdf.PdfObject;
+
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -38,6 +40,12 @@ public interface PdfStructure
 
 	PdfStructureEntry beginTag(PdfStructureEntry parent, String name, String text);
 	
+	// Method to handle a tag inside a text element
+	PdfStructureEntry beginTag(PdfStructureEntry parent, String name, String addName, PdfObject addObject);
+
+	// Method to handle a tag inside a text element
+	PdfStructureEntry beginTag(PdfStructureEntry parent, String name, String text, String addName, PdfObject addObject);
+			
 	void endTag();
 
 }

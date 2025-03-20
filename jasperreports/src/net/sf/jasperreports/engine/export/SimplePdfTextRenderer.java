@@ -130,8 +130,10 @@ public class SimplePdfTextRenderer extends AbstractPdfTextRenderer
 		String paragraphText
 		)
 	{
-		tagHelper.startText(text.getLinkType() != null);
 
+		// Provide the text too so that we get properties inside. It may contain a tag for a single text element
+		tagHelper.startText(text,text.getLinkType() != null);
+				
 		if (bulletChunk != null)
 		{
 			PdfPhrase phrase = pdfProducer.createPhrase();

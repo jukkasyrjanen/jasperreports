@@ -34,12 +34,16 @@ package net.sf.jasperreports.engine.export;
 
 import java.util.Stack;
 
+import com.lowagie.text.pdf.PdfObject;
+import com.lowagie.text.pdf.PdfString;
+
 import net.sf.jasperreports.annotations.properties.Property;
 import net.sf.jasperreports.annotations.properties.PropertyScope;
 import net.sf.jasperreports.crosstabs.JRCellContents;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintImage;
+import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.util.StyledTextListWriter;
 import net.sf.jasperreports.export.AccessibilityUtil;
 import net.sf.jasperreports.export.pdf.PdfProducer;
@@ -185,6 +189,15 @@ import net.sf.jasperreports.properties.PropertyConstants;
  */
 public class JRPdfExporterTagHelper implements StyledTextListWriter
 {
+	
+	// Add a new tag to appear in a single text element to indicate locale change
+		@Property(
+				category = PropertyConstants.CATEGORY_EXPORT,
+				scopes = {PropertyScope.ELEMENT},
+				sinceVersion = PropertyConstants.VERSION_6_20_5
+				)
+		public static final String PROPERTY_TAG_LANG = JRPdfExporter.PDF_EXPORTER_PROPERTIES_PREFIX + "tag.lang";
+		
 	@Property(
 			category = PropertyConstants.CATEGORY_EXPORT,
 			scopes = {PropertyScope.ELEMENT},
@@ -538,22 +551,39 @@ public class JRPdfExporterTagHelper implements StyledTextListWriter
 		}
 	}
 
-	protected void startText(boolean isHyperlink)
+	protected void startText(JRPrintText jrtext, boolean isHyperlink)
 	{
 		if (isTagged)
 		{
 //			PdfStructureElement parentTag = tableCellTag == null ? (tableHeaderTag == null ? allTag : tableHeaderTag): tableCellTag;
 //			PdfStructureElement textTag = new PdfStructureElement(parentTag, PdfName.TEXT);
 			pdfStructure.beginTag(tagStack.peek(), isHyperlink ? "Link" : "Text");
+			
+
+			// Check if we should add a tag for a text element
+			String pname = null;
+			PdfObject pobject = null;
+			if (jrtext.hasProperties()&&jrtext.getPropertiesMap().containsProperty(PROPERTY_TAG_LANG)) {
+				pname = "Lang";
+				pobject = new PdfString(jrtext.getPropertiesMap().getProperty(PROPERTY_TAG_LANG));
+			}
+			pdfStructure.beginTag(tagStack.peek(), isHyperlink ? "Link" : "Text", pname, pobject);		
 		}
 	}
 
-	protected void startText(String text, boolean isHyperlink)
+	protected void startText(JRPrintText jrtext, String text, boolean isHyperlink)
 	{
 		if (isTagged)
 		{
+			// Check if we should add a tag for a text element
+			String pname = null;
+			PdfObject pobject = null;
+			if (jrtext.hasProperties()&&jrtext.getPropertiesMap().containsProperty(PROPERTY_TAG_LANG)) {
+				pname = "Lang";
+				pobject = new PdfString(jrtext.getPropertiesMap().getProperty(PROPERTY_TAG_LANG));
+			}
 			pdfStructure.beginTag(tagStack.peek(), isHyperlink ? "Link" : "Text", 
-					text);
+					text, pname, pobject);
 		}
 	}
 
